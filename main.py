@@ -19,7 +19,6 @@ import time
 
 logger = create_logger()
 
-
 def transform_info(info):
     """Transforms the data before it is stored."""
     if info['website_address_list']:
@@ -27,7 +26,7 @@ def transform_info(info):
     else:
         info['website_address_list'] = None
     
-    if 'facebook_address_list' in info:
+    if 'facebook_address_list' in info:  # check if at least any info has been got from fb i.e when the link is valid
         if not info['facebook_address_list']: 
             info['facebook_address_list'] = None
         else:
@@ -112,7 +111,8 @@ def main(urls):
             all_data.append(info)
             print(f"Extracted info from {url}: {info}")
         else:
-            logger.error(f"Failed to get info for {url}")
+            all_data.append({'url': url})
+            logger.error(f"Failed to fetch the {url}")
 
     save_data(all_data)
     driver.quit()
@@ -121,23 +121,18 @@ def main(urls):
 if __name__ == '__main__':
     start_time = time.time()
     
-    urls = pd.read_excel('momence_websites.xlsx')["Momence Merchant URL's"].tolist()[:12]
-    # urls = ['https://bikramyogaleicester.com/schedule-2-2/']
+    urls = pd.read_csv('cleaned_momence_websites.csv')['domain'].iloc[:50].tolist()
     main(urls)
 
     end_time = time.time()
     print(f"Time taken: {end_time - start_time} seconds")
 
-    
-  # urls = [
-    #     'https://dottirhotyoga.squarespace.com/workshops',
-    #     'https://downtoearthlondon.co.uk/workshops/',
-    #     'https://downwarddog.com/class-schedule/',
-    #     'https://drivefitnessstudio.com/bootcamp/',
-    #     'https://pbn.haus/',
-    #     'https://drogadomilosci.com/proces/',
-    #     'https://dte-yoga.com/2023/01/07/explore-our-diverse-yoga-classes-at-dte-yoga-in-port-saint-lucie/',
-    #     'https://earthworm-quillfish-g2gx.squarespace.com/events/yin-sound-july',
-    #     'https://earthworm-saxophone-epza.squarespace.com/special-promotion',
-    #     'https://earthyogastudio.com/schedule'
-    # ]
+
+# todo: 
+# 1. the bot currently checks for the required info on the given page of the website (and fb). Navigation to relevant pages 
+# should also be done.
+# 2. the bot should parse the domains from the urls and extract the info from them. If the info can't be found on the main page
+# (domain), then the bot should try to find the contact page and find info there.
+# 3. Addresses and phone numbers for other supported countries need to be added.
+# 4. Try the html_text library from zyte to check if we get any better text from web pages.
+

@@ -99,5 +99,3 @@ if __name__=='__main__':
 
 
 
-# write a function for adding two numbers
-

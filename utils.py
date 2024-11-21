@@ -7,6 +7,8 @@ from geopy.geocoders import Nominatim
 from bs4 import BeautifulSoup
 
 
+# todo: add address patterns for other supported countries
+
 USA_ADDRESS_PATTERN = (
     r'(\d+\s[A-Za-z0-9\-\.\s]+,\s[A-Za-z\s]+,\s[A-Z]{2},?\s[A-Za-z\s]+(?:,\s[A-Za-z\s]+)?'  # Street, city, state, country, optional state again
     r'|[A-Za-z0-9\-\s]+,\s[A-Za-z\s]+,\s[A-Z]{2}\s\d{5}'                                    # Street, city, state, ZIP
@@ -15,6 +17,9 @@ USA_ADDRESS_PATTERN = (
     r'|[A-Za-z\s]+,\s[A-Z]{2}\s\d{5}'                                                       # City, state, ZIP
     r'|\d+\s[A-Za-z0-9\-\.\s]+,\s[A-Za-z\s]+)'                                              # Street and city only
 )
+# CANADA_ADDRESS_PATTERN = (
+#     r'(\d+\s[\w\s]+),\s([\w\s]+),\s([A-Z]{2})\s([A-Z]\d[A-Z]\s?\d[A-Z]\d)\sCAN'
+# )
 EMAIL_PATTERN = re.compile(r'[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}')
 
 
@@ -50,6 +55,13 @@ def extract_addresses(content):
 
 
 def extract_info(content):
+    """Extracts the required information from the given content.
+    
+    output Schema:
+    email: str,
+    phone: str,
+    address_list: list
+    """
     info = {
         'email': None,
         'phone': None,
@@ -62,3 +74,4 @@ def extract_info(content):
     text = soup.get_text(strip=True)
     info['address_list'] = extract_addresses(text)          
     return info
+

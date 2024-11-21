@@ -1,32 +1,32 @@
-# from openai import OpenAI
-# client = OpenAI()
+import pandas as pd
+from urllib.parse import urlparse
 
-# def get_completion(prompt, model="gpt-4o-mini"):
-#   response = client.chat.completions.create(
-#   model=model,
-#   messages = [
-#     {"role": "system", "content": "You are a maps and addresses expert"}, 
-#     {"role": "user", "content": prompt}
-#   ]
-# )
-#   return response.choices[0].message.content, response.usage.total_tokens
+def get_domain_with_scheme(url):
+    """Extracts the scheme and domain from a URL, adding 'http' if no scheme is provided."""
+    if not url.startswith(('http://', 'https://')):
+        url = 'http://' + url  # Add a default scheme if missing
+    parsed_url = urlparse(url)
+    domain = f"{parsed_url.scheme}://{parsed_url.netloc}"
+    
+    # Validate domain (basic check for at least one dot in the netloc)
+    if '.' in parsed_url.netloc:
+        return domain
+    else:
+        return None
 
 
-# addresses = ['book a VERSACLIMBER classsTopCall us today at304-550-8660108 Capitol Street, Charleston, WV 25301']
+# Read the file containing URLs
+input_file = 'momence_websites.xlsx'  # Replace with your actual file name
+output_file = 'cleaned_momence_websites.csv'
 
-# prompt = f"""
-# The list {addresses} contains potential address found on a business website. A \
-# regex pattern has recognized this list. It is possible that the list items contains some junk text \
-# or it might contain an address in a pure form or along with some junk text. Your job is to \
-# recognize an address if there is any, and return that.
+# Load the URLs into a pandas DataFrame
+df = pd.read_excel(input_file)
 
-# output format:
-# found address = the found address or None
+# Apply the function to extract scheme and domain
+df['domain'] = df["Momence Merchant URL's"].apply(get_domain_with_scheme)
 
-# additional info: Don't waste my tokens on extra info, simply return the found address or None.
-# """
+# Write the results to a new file
+df[['domain']].to_csv(output_file, index=False, header=False)
 
-# response, total_tokens = get_completion(prompt)
-# print(response)
-# print(total_tokens)
+print(f"Domain parts saved to {output_file}")
 
