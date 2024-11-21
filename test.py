@@ -1,34 +1,32 @@
-from openai import OpenAI
-client = OpenAI()
+# from openai import OpenAI
+# client = OpenAI()
 
-def get_completion(prompt, model="gpt-4o-mini"):
-  response = client.chat.completions.create(
-  model=model,
-  messages = [
-    {"role": "system", "content": "You are a maps and addresses expert"}, 
-    {"role": "user", "content": prompt}
-  ]
-)
-  return response.choices[0].message.content, response.usage.total_tokens
-
-
-addresses = ['book a VERSACLIMBER classsTopCall us today at304-550-8660108 Capitol Street, Charleston, WV 25301']
-
-prompt = f"""
-The list {addresses} contains potential address found on a business website. A \
-regex pattern has recognized this list. It is possible that the list items contains some junk text \
-or it might contain an address in a pure form or along with some junk text. Your job is to \
-recognize an address if there is any, and return that.
-
-output format:
-found address = the found address or None
-
-additional info: Don't waste my tokens on extra info, simply return the found address or None.
-"""
-
-response, total_tokens = get_completion(prompt)
-print(response)
-print(total_tokens)
+# def get_completion(prompt, model="gpt-4o-mini"):
+#   response = client.chat.completions.create(
+#   model=model,
+#   messages = [
+#     {"role": "system", "content": "You are a maps and addresses expert"}, 
+#     {"role": "user", "content": prompt}
+#   ]
+# )
+#   return response.choices[0].message.content, response.usage.total_tokens
 
 
+# addresses = ['book a VERSACLIMBER classsTopCall us today at304-550-8660108 Capitol Street, Charleston, WV 25301']
+
+# prompt = f"""
+# The list {addresses} contains potential address found on a business website. A \
+# regex pattern has recognized this list. It is possible that the list items contains some junk text \
+# or it might contain an address in a pure form or along with some junk text. Your job is to \
+# recognize an address if there is any, and return that.
+
+# output format:
+# found address = the found address or None
+
+# additional info: Don't waste my tokens on extra info, simply return the found address or None.
+# """
+
+# response, total_tokens = get_completion(prompt)
+# print(response)
+# print(total_tokens)
 

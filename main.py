@@ -15,39 +15,53 @@ from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import TimeoutException
 from ai import find_valid_address
+import time
 
 logger = create_logger()
 
 
 def transform_info(info):
+    """Transforms the data before it is stored."""
     if info['website_address_list']:
         info['website_address_list'] = find_valid_address(info['website_address_list'])
     else:
         info['website_address_list'] = None
     
-    if 'facebook_address_list' in info and not info['facebook_address_list']:  # if the address list is empty, set it to None instead of square brackets
-        info['facebook_address_list'] = None
+    if 'facebook_address_list' in info:
+        if not info['facebook_address_list']: 
+            info['facebook_address_list'] = None
+        else:
+            info['facebook_address_list'] = info['facebook_address_list'][0]
     return info
 
 
-
 def process_url(url, driver):
-    """The function drops the urls which are not fetched and they are not stored in the output file.
-
-    Output Schema:
-    {
-        'url': The URL of the website being scraped,
-        'facebook_email': The email of the business from Facebook,
-        'facebook_phone': The phone number of the business from Facebook,
-        'facebook_address_list': The address of the business from Facebook,
-        'facebook_business_type': The business type of the business from Facebook,
-        'facebook_business_name': The name of the business from Facebook,
-        'website_email': The email of the business from the website,
-        'website_phone': The phone number of the business from the website,
-        'website_address_list': The address of the business from the website,
-        'website_business_name': The name of the business from the website
-    }
     """
+    Process a single URL, scrape data from the website and its associated Facebook page.
+
+    Args:
+    url (str): The URL of the website to process.
+    driver (webdriver.Chrome): Selenium WebDriver instance for web scraping.
+
+    Returns:
+    dict: A dictionary containing scraped information with the following structure:
+        {
+            'url': str,                     # The URL of the website being scraped
+            'facebook_email': str,          # Email from Facebook page
+            'facebook_phone': str,          # Phone number from Facebook page
+            'facebook_address_list': str,   # Address from Facebook page (single string)
+            'facebook_business_type': str,  # Business type from Facebook page
+            'facebook_business_name': str,  # Business name from Facebook page
+            'website_email': str,           # Email from website
+            'website_phone': str,           # Phone number from website
+            'website_address_list': str,    # A single valid address from website
+            'website_business_name': str    # Business name from website
+        }
+
+    Note:
+    - If the URL fails to fetch or process, an empty dictionary is returned.
+    """
+
     logger.info(f"Processing {url}")
 
     content = fetch_url(url)
@@ -79,12 +93,16 @@ def get_driver():
     driver.set_page_load_timeout(20)  # change the page load strategy or timout
     return driver
 
-def save_to_excel(data, filename):
+
+def save_data(data):
+    file_name = 'extracted_info.csv'
     df = pd.DataFrame(data)
-    df.to_excel(filename, index=False)
-    print(f"Data saved to {filename}")
+    df.to_csv(file_name, index=False)
+    print(f"Data saved to {file_name}")
+
 
 def main(urls):
+    """Handles the flow of execution and starts/quits of the driver."""
     driver = get_driver()
     all_data = []
 
@@ -93,13 +111,25 @@ def main(urls):
         if info:
             all_data.append(info)
             print(f"Extracted info from {url}: {info}")
+        else:
+            logger.error(f"Failed to get info for {url}")
 
-    save_to_excel(all_data, 'extracted_info.xlsx')
+    save_data(all_data)
     driver.quit()
 
 
 if __name__ == '__main__':
-    # urls = [
+    start_time = time.time()
+    
+    urls = pd.read_excel('momence_websites.xlsx')["Momence Merchant URL's"].tolist()[:12]
+    # urls = ['https://bikramyogaleicester.com/schedule-2-2/']
+    main(urls)
+
+    end_time = time.time()
+    print(f"Time taken: {end_time - start_time} seconds")
+
+    
+  # urls = [
     #     'https://dottirhotyoga.squarespace.com/workshops',
     #     'https://downtoearthlondon.co.uk/workshops/',
     #     'https://downwarddog.com/class-schedule/',
@@ -111,8 +141,3 @@ if __name__ == '__main__':
     #     'https://earthworm-saxophone-epza.squarespace.com/special-promotion',
     #     'https://earthyogastudio.com/schedule'
     # ]
-
-    urls = pd.read_excel('momence_websites.xlsx')["Momence Merchant URL's"].tolist()[:21]
-    main(urls)
-
-    

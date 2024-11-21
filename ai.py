@@ -16,7 +16,7 @@ def find_valid_address(address_list):
   prompt = f"""
     The list {address_list} contains potential address found on a business website. A \
     regex pattern has recognized this list. The list items might contain some junk text \
-    or it might contain an address in a pure form or along with some junk text. Your job is to \
+    or it might contain an address in a pure form, or an addressalong with some junk text. Your job is to \
     recognize an address if there is any, and return that.
 
     output format:

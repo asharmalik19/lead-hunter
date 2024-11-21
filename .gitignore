@@ -8,3 +8,4 @@ venv/
 lead_hunter.log
 *.xlsx
 *.txt
+test.py
