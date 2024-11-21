@@ -30,7 +30,7 @@ def get_company_name(content):
     soup = BeautifulSoup(content, 'html.parser') 
     title_tag = soup.find('title')
     if title_tag:
-        title_text = title_tag.get_text().strip()  # Remove leading/trailing whitespace
+        title_text = title_tag.get_text().strip()
         
         # Assuming the company name is a part of the title, extract it
         # Example: "Company Name - Some other information"
@@ -41,16 +41,31 @@ def get_company_name(content):
     return None
 
 def extract_info_from_website(content):
+    """
+    Extracts information from a website.
+
+    Args:
+        content (str): The content of the website.
+
+    Returns:
+        dict: A dictionary containing the extracted information with the following keys:
+            - website_email (str): The email address.
+            - website_phone (str): The phone number.
+            - website_address_list (str): The address.
+            - website_business_name (str): The name of the business.
+    """
+
     info = extract_info(content)   
     company = get_company_name(content)
-    if company:
-        info['Company'] = company
+    info['business_name'] = company
+    
+    info = {f'website_{key}': value for key, value in info.items()}
     return info
 
 
 
 if __name__ == '__main__':
-    url = 'https://angusfordrobertson.com/the-awaken-club-6-week-course-july/'
+    url = 'https://heightsites.com/event/fort-tryon-park-walk-thru/'
     content = fetch_url(url)
     if content:
         info = extract_info_from_website(content)  

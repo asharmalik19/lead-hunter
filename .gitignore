@@ -1,0 +1,10 @@
+__pycache__/
+*.__pyc
+
+venv/
+
+.history/
+
+lead_hunter.log
+*.xlsx
+*.txt

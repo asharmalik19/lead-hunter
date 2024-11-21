@@ -1,32 +1,34 @@
-import re
-from bs4 import BeautifulSoup
+from openai import OpenAI
+client = OpenAI()
 
-with open("content.txt", "r", encoding='utf-8') as f:
-    content = f.read()
-
-soup = BeautifulSoup(content, "html.parser")
-text = soup.get_text(strip=True)
-
-usa_address_pattern = (
-    r'(\d+\s[A-Za-z0-9\-\s]+,\s[A-Za-z\s]+,\s[A-Z]{2}(?:\s\d{5})?(?:,\s[A-Za-z\s]+)?'  # Street, city, state, ZIP with optional country
-    r'|[A-Za-z0-9\-\s]+,\s[A-Za-z\s]+,\s[A-Z]{2}\s\d{5}'                              # Street, city, state, ZIP
-    r'|\d+\s[A-Za-z\s]+,\s[A-Z]{2}\s\d{5}'                                            # Numbered street, state, ZIP
-    r'|\d+\s[A-Za-z0-9\-\s]+(?:,\s(?:Apt|Unit|Suite|#)\s?\d+[A-Za-z]?\.?)?,\s[A-Za-z\s]+(?:,\s[A-Z]{2}\s\d{5})?'  # Street, Apt/Unit/Suite, city, state, ZIP
-    r'|[A-Za-z\s]+,\s[A-Z]{2}\s\d{5}'                                                 # City, state, ZIP
-    r'|\d+\s[A-Za-z0-9\-\s]+,\s[A-Za-z\s]+)'                                          # Street and city only
+def get_completion(prompt, model="gpt-4o-mini"):
+  response = client.chat.completions.create(
+  model=model,
+  messages = [
+    {"role": "system", "content": "You are a maps and addresses expert"}, 
+    {"role": "user", "content": prompt}
+  ]
 )
+  return response.choices[0].message.content, response.usage.total_tokens
 
-# Extract potential addresses
-potential_addresses = []
-# for pattern in patterns:
-#     matches = re.findall(pattern, text)
-#     potential_addresses.extend(matches)
-matches = re.findall(usa_address_pattern, text)
-potential_addresses.extend(matches)
 
-# Remove duplicates (if any)
-potential_addresses = list(set(potential_addresses))
+addresses = ['book a VERSACLIMBER classsTopCall us today at304-550-8660108 Capitol Street, Charleston, WV 25301']
 
-# Print all found potential addresses
-for address in potential_addresses:
-    print("Potential address found:", address)
+prompt = f"""
+The list {addresses} contains potential address found on a business website. A \
+regex pattern has recognized this list. It is possible that the list items contains some junk text \
+or it might contain an address in a pure form or along with some junk text. Your job is to \
+recognize an address if there is any, and return that.
+
+output format:
+found address = the found address or None
+
+additional info: Don't waste my tokens on extra info, simply return the found address or None.
+"""
+
+response, total_tokens = get_completion(prompt)
+print(response)
+print(total_tokens)
+
+
+
