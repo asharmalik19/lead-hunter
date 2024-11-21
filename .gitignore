@@ -10,3 +10,6 @@ lead_hunter.log
 *.txt
 test.py
 *.csv
+
+extracted_info.csv
+test.py
