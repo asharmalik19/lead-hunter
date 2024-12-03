@@ -13,3 +13,5 @@ test.py
 
 extracted_info.csv
 test.py
+
+.env
