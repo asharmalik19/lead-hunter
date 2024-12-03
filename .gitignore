@@ -5,7 +5,7 @@ venv/
 
 .history/
 
-lead_hunter.log
+*.log
 *.xlsx
 *.txt
 test.py

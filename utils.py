@@ -33,7 +33,7 @@ def extract_email(content):
 def extract_phone_number(content):
     regions = ['US', 'GB', 'CA', 'AU']
 
-    for region in regions:
+    for region in regions:      # todo: what if the library parses a wrong number of USA while there is a correct number for CA?
         numbers = phonenumbers.PhoneNumberMatcher(content, region)
         for number in numbers:
             print(f'number matched: {number.raw_string}')

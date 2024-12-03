@@ -2,8 +2,6 @@ from scrape_website import fetch_url, get_fb_link, extract_info_from_website
 from scrape_fb import extract_info_from_fb
 from config_logger import create_logger
 from selenium import webdriver
-from selenium.webdriver.chrome.service import Service as ChromeService
-from webdriver_manager.chrome import ChromeDriverManager
 import re
 import pandas as pd
 from datetime import datetime
@@ -88,7 +86,7 @@ def get_driver():
     options = webdriver.ChromeOptions()
     options.add_argument('--headless')
     options.page_load_strategy = 'eager'
-    driver = webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()), options=options)
+    driver = webdriver.Chrome(options=options)
     driver.set_page_load_timeout(20)  # change the page load strategy or timout
     return driver
 
@@ -107,7 +105,7 @@ def main(urls):
 
     for url in urls:
         info = process_url(url, driver)
-        if info:
+        if info:        # todo: if info contains no values for keys, then navigate to the content page to get info
             all_data.append(info)
             print(f"Extracted info from {url}: {info}")
         else:
@@ -121,7 +119,7 @@ def main(urls):
 if __name__ == '__main__':
     start_time = time.time()
     
-    urls = pd.read_csv('cleaned_momence_websites.csv')['domain'].iloc[:50].tolist()
+    urls = pd.read_csv('cleaned_momence_websites.csv')['domain'].iloc[:20].tolist()
     main(urls)
 
     end_time = time.time()
