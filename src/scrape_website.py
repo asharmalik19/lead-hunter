@@ -1,5 +1,5 @@
 import requests
-from utils import extract_info
+from src.utils import extract_info
 from bs4 import BeautifulSoup
 import re
 

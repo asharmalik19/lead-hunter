@@ -1,6 +1,6 @@
-from scrape_website import fetch_url, get_fb_link, extract_info_from_website
-from scrape_fb import extract_info_from_fb
-from config_logger import create_logger
+from src.scrape_website import fetch_url, get_fb_link, extract_info_from_website
+from src.scrape_fb import extract_info_from_fb
+from src.config_logger import create_logger
 from selenium import webdriver
 import re
 import pandas as pd
@@ -12,7 +12,7 @@ from bs4 import BeautifulSoup
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import TimeoutException
-from ai import find_valid_address
+from src.ai import find_valid_address
 import time
 
 logger = create_logger()
@@ -119,7 +119,7 @@ def main(urls):
 if __name__ == '__main__':
     start_time = time.time()
     
-    urls = pd.read_csv('cleaned_momence_websites.csv')['domain'].iloc[:20].tolist()
+    urls = pd.read_csv('cleaned_momence_websites.csv')['domain'].iloc[:5].tolist()
     main(urls)
 
     end_time = time.time()

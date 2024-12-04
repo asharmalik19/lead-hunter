@@ -9,9 +9,9 @@ from bs4 import BeautifulSoup
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import TimeoutException
-from utils import extract_info
+from src.utils import extract_info
 import logging
-from config_logger import create_logger
+from src.config_logger import create_logger
 
 """
 Both the scrape_fb and scrape_website module uses the same function for scraping the main required info. If additional info is available on the fb page which is not in the website, it can be added here in the fb module or if the approach needs for scraping the fb needs to be changed, it can be done here.

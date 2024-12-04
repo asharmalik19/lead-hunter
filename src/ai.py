@@ -1,12 +1,8 @@
-from dotenv import load_dotenv
-import os
 from openai import OpenAI
-
-load_dotenv()
-client = OpenAI()
-
+import os
 
 def get_completion(prompt, model="gpt-4o-mini"):
+  client = OpenAI()
   response = client.chat.completions.create(
   model=model,
   messages = [
@@ -31,12 +27,12 @@ def find_valid_address(address_list):
   
   return get_completion(prompt)
 
-
   
 if __name__ == '__main__':
   addresse_list = ['book a VERSACLIMBER classsTopCall us today at304-550-8660108 Capitol Street, Charleston, WV 25301']
 
   address = find_valid_address(addresse_list)
   print(address)
+
 
 

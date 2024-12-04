@@ -15,3 +15,6 @@ extracted_info.csv
 test.py
 
 .env
+
+extra_code/
+cleaned_repo
