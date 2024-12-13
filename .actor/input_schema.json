@@ -1,0 +1,15 @@
+{
+    "title": "Lead Hunter",
+    "type": "object",
+    "schemaVersion": 1,
+    "properties": {
+        "startUrls": {
+            "title": "Website URLs",
+            "type": "array",
+            "description": "List of website URLs to scrape",
+            "editor": "requestListSources",
+            "prefill": []
+        }
+    },
+    "required": ["startUrls"]
+}

@@ -14,8 +14,13 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import TimeoutException
 from src.ai import find_valid_address
 import time
+import requests
 
-logger = create_logger()
+import os
+from apify import Actor
+
+
+# logger = create_logger()
 
 def transform_info(info):
     """Transforms the data before it is stored."""
@@ -59,11 +64,11 @@ def process_url(url, driver):
     - If the URL fails to fetch or process, an empty dictionary is returned.
     """
 
-    logger.info(f"Processing {url}")
+    Actor.log.info(f"Processing {url}")
 
     content = fetch_url(url)
     if not content:
-        logger.error(f"Failed to get content for {url}")
+        Actor.log.error(f"Failed to get content for {url}")
         return {}
     
     info = {'url': url}  # this contains the combined info from the website and fb
@@ -72,10 +77,10 @@ def process_url(url, driver):
     if fb_link:
         info_from_fb = extract_info_from_fb(fb_link, driver)
         info.update(info_from_fb)
-        logger.info(f"{url}: Extracted info from fb: {info_from_fb}")
+        Actor.log.info(f"{url}: Extracted info from fb: {info_from_fb}")
 
     info_from_website = extract_info_from_website(content)
-    logger.info(f"{url}: Extracted info_from_website from website: {info_from_website}")
+    Actor.log.info(f"{url}: Extracted info_from_website from website: {info_from_website}")
     info.update(info_from_website)
 
     info = transform_info(info)
@@ -97,34 +102,36 @@ def save_data(data):
     df.to_csv(file_name, index=False)
     print(f"Data saved to {file_name}")
 
+  
 
-def main(urls):
-    """Handles the flow of execution and starts/quits of the driver."""
-    driver = get_driver()
-    all_data = []
+async def main():
+    async with Actor:
+        # Get input
+        actor_input = await Actor.get_input() or {}
+        start_urls = actor_input.get('startUrls', [])
 
-    for url in urls:
-        info = process_url(url, driver)
-        if info:        # todo: if info contains no values for keys, then navigate to the content page to get info
-            all_data.append(info)
-            print(f"Extracted info from {url}: {info}")
-        else:
-            all_data.append({'url': url})
-            logger.error(f"Failed to fetch the {url}")
+        url_of_text_file = start_urls[0].get('requestsFromUrl')
+        response = requests.get(url_of_text_file)
+        urls = response.text.splitlines()
+        
+        # Your existing code
+        driver = get_driver()
+        all_data = []
 
-    save_data(all_data)
-    driver.quit()
+        for url in urls:
+            info = process_url(url, driver)
+            if info:
+                all_data.append(info)
+                # Push data to dataset
+                await Actor.push_data(info)
+            else:
+                all_data.append({'url': url})
+                Actor.log.error(f"Failed to fetch the {url}")
 
+        driver.quit()
 
 if __name__ == '__main__':
-    start_time = time.time()
-    
-    urls = pd.read_csv('cleaned_momence_websites.csv')['domain'].iloc[:5].tolist()
-    main(urls)
-
-    end_time = time.time()
-    print(f"Time taken: {end_time - start_time} seconds")
-
+    Actor.main(main)
 
 # todo: 
 # 1. the bot currently checks for the required info on the given page of the website (and fb). Navigation to relevant pages 

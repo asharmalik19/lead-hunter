@@ -10,15 +10,12 @@ from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import TimeoutException
 from src.utils import extract_info
-import logging
-from src.config_logger import create_logger
+from apify import Actor
+from src.utils import extract_info
 
 """
 Both the scrape_fb and scrape_website module uses the same function for scraping the main required info. If additional info is available on the fb page which is not in the website, it can be added here in the fb module or if the approach needs for scraping the fb needs to be changed, it can be done here.
 """
-
-
-logger = create_logger('Lead_hunter_facebook')
 
 def get_business_type(intro_section):
     business_type = intro_section.find_all('div')[0].text.strip()
@@ -59,14 +56,14 @@ def extract_info_from_fb(fb_link, driver):
     driver.get(fb_link)
 
     if not close_popup(driver):
-        logger.info(f'popup did not appear for {fb_link}')
+        Actor.log.info(f'popup did not appear for {fb_link}')
         return {}
-    logger.info(f'popup succesfully closed for {fb_link}')
+    Actor.log.info(f'popup succesfully closed for {fb_link}')
     fb_page_source = driver.page_source
     soup = BeautifulSoup(fb_page_source, 'html.parser')
     intro_section = soup.select_one('div.xieb3on ul')  # narrow down to the intro section in the fb page
     if not intro_section:
-        logger.warning(f'intro section not found for {fb_link}')
+        Actor.log.warning(f'intro section not found for {fb_link}')
         return {}
     
     info = extract_info(intro_section.get_text(separator='\n'))  # the separator is essential for email to be correctly extracted
