@@ -15,7 +15,6 @@ from selenium.common.exceptions import TimeoutException
 from src.ai import find_valid_address
 import time
 import requests
-
 import os
 from apify import Actor
 
